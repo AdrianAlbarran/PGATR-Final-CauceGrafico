@@ -84,21 +84,21 @@ Shader "Custom/SeagullGeometry"
         float halfSize = _PlaneSize * 0.5;
 
         geom2frag o;
-        
+        float3 pos = IN[0].pos.xyz; 
         // Generar 4 vértices del plano
-        o.pos = UnityObjectToClipPos(float4(0.5, 0, 0, 1));
+        o.pos = UnityObjectToClipPos(pos + float4(halfSize, 0, 0, 0));
         o.uv = float2(0, 0);
         triStream.Append(o);
 
-        o.pos = UnityObjectToClipPos(float4(-0.5, 0, 0, 1));
+        o.pos = UnityObjectToClipPos(pos + float4(-halfSize, 0, 0, 0));
         o.uv = float2(1, 0);
         triStream.Append(o);
 
-        o.pos = UnityObjectToClipPos(float4(0.5, 1, 0, 1));
+        o.pos = UnityObjectToClipPos(pos + float4(halfSize, _PlaneSize, 0, 0));
         o.uv = float2(0, 1);
         triStream.Append(o);
 
-        o.pos = UnityObjectToClipPos(float4(-0.5, 1, 0, 1));
+        o.pos = UnityObjectToClipPos(pos + float4(-halfSize, _PlaneSize, 0, 0));
         o.uv = float2(1, 1);
         triStream.Append(o);
     }
@@ -111,7 +111,8 @@ Shader "Custom/SeagullGeometry"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" }
+
         
 
 
