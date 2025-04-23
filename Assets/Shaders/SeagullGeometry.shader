@@ -5,6 +5,7 @@ Shader "Custom/SeagullGeometry"
         _PlaneSize ("Tamaño del Plano", Float) = 1.0
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Textura", 2D) = "white" {}
+        _FlapSpeed ("Flap Speed", Range(0, 1)) = 0.3
     }
 
     CGINCLUDE
@@ -34,6 +35,7 @@ Shader "Custom/SeagullGeometry"
     float _PlaneSize;
     sampler2D _MainTex;
     float4 _Color;
+    float _FlapSpeed;
 
 
     ////////////////////////////////////////////////////////////////////
@@ -77,34 +79,40 @@ Shader "Custom/SeagullGeometry"
     void geom(point vert2geom IN[1], inout TriangleStream<geom2frag> triStream)
     {
         // Vectores para billboarding
-        float3 camRight = UNITY_MATRIX_V[0].xyz;
-        float3 camUp = UNITY_MATRIX_V[1].xyz;
-
-        float3 center = IN[0].pos.xyz;
         float halfSize = _PlaneSize * 0.5;
+
+        // Flap Animation
+        // float randomSeed = length(mul(unity_ObjectToWorld, IN[0].pos).xyz);
+        // float flapAngle = sin(_Time.y * _FlapSpeed + randomSeed * _RandomOffset) * _FlapIntensity * 0.5;
 
         geom2frag o;
         float3 pos = IN[0].pos.xyz; 
-        // Generar 4 vértices del plano
-        o.pos = UnityObjectToClipPos(pos + float4(halfSize, 0, 0, 0));
+        // Generate all 4 vertex
+        o.pos = UnityObjectToClipPos(pos + float4(halfSize, 0, 0, 1));
         o.uv = float2(0, 0);
         triStream.Append(o);
 
-        o.pos = UnityObjectToClipPos(pos + float4(-halfSize, 0, 0, 0));
+        o.pos = UnityObjectToClipPos(pos + float4(-halfSize, 0, 0, 1));
         o.uv = float2(1, 0);
         triStream.Append(o);
 
-        o.pos = UnityObjectToClipPos(pos + float4(halfSize, _PlaneSize, 0, 0));
+        o.pos = UnityObjectToClipPos(pos + float4(halfSize, _PlaneSize, 0, 1));
         o.uv = float2(0, 1);
         triStream.Append(o);
 
-        o.pos = UnityObjectToClipPos(pos + float4(-halfSize, _PlaneSize, 0, 0));
+        o.pos = UnityObjectToClipPos(pos + float4(-halfSize, _PlaneSize, 0, 1));
         o.uv = float2(1, 1);
         triStream.Append(o);
     }
 
-    fixed4 frag(geom2frag i) : SV_Target {
-        return tex2D(_MainTex, i.uv) * _Color;
+    float4 frag(geom2frag i) : SV_Target {
+        float4 color = tex2D(_MainTex, i.uv);
+        
+        if(color.a < 0.01)
+        {
+            discard;
+        }
+        return tex2D(_MainTex, i.uv);
     }
 
     ENDCG
