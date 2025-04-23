@@ -18,7 +18,7 @@ Shader "Custom/SeagullGeometry"
         float4 vertex : POSITION;
     };
 
-    struct vert2geo {
+    struct vert2geom {
         float4 pos : SV_POSITION;
     };
 
@@ -66,15 +66,15 @@ Shader "Custom/SeagullGeometry"
     ///// MAIN FUNCS
     ////////////////////////////////////////////////////////////////////
 
-	float4 vert(appData vertex) : SV_POSITION
+	vert2geom vert(appData vertex) : SV_POSITION
 	{
-        vert2geo o;
+        vert2geom o;
         o.pos = vertex.vertex;
 		return o;
 	}
 
     [maxvertexcount(4)]
-    void geom(point vert2geo IN[1], inout TriangleStream<geom2frag> triStream)
+    void geom(point vert2geom IN[1], inout TriangleStream<geom2frag> triStream)
     {
         // Vectores para billboarding
         float3 camRight = UNITY_MATRIX_V[0].xyz;
@@ -83,24 +83,24 @@ Shader "Custom/SeagullGeometry"
         float3 center = IN[0].pos.xyz;
         float halfSize = _PlaneSize * 0.5;
 
-        g2f o;
+        geom2frag o;
         
         // Generar 4 vértices del plano
-        o.pos = UnityWorldToClipPos(center + (-camRight - camUp) * halfSize);
+        o.pos = UnityObjectToClipPos(float4(0.5, 0, 0, 1));
         o.uv = float2(0, 0);
-        stream.Append(o);
+        triStream.Append(o);
 
-        o.pos = UnityWorldToClipPos(center + (camRight - camUp) * halfSize);
+        o.pos = UnityObjectToClipPos(float4(-0.5, 0, 0, 1));
         o.uv = float2(1, 0);
-        stream.Append(o);
+        triStream.Append(o);
 
-        o.pos = UnityWorldToClipPos(center + (-camRight + camUp) * halfSize);
+        o.pos = UnityObjectToClipPos(float4(0.5, 1, 0, 1));
         o.uv = float2(0, 1);
-        stream.Append(o);
+        triStream.Append(o);
 
-        o.pos = UnityWorldToClipPos(center + (camRight + camUp) * halfSize);
+        o.pos = UnityObjectToClipPos(float4(-0.5, 1, 0, 1));
         o.uv = float2(1, 1);
-        stream.Append(o);
+        triStream.Append(o);
     }
 
     fixed4 frag(geom2frag i) : SV_Target {

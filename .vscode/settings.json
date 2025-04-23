@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Practica_CauceGrafico.sln"
+    "dotnet.defaultSolution": "PGATR-Final-CauceGrafico.sln"
 }
