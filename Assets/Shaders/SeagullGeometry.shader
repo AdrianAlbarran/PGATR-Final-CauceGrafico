@@ -2,9 +2,9 @@ Shader "Custom/SeagullGeometry"
 {
     Properties
     {
-        _PlaneSize ("Tamaño del Plano", Float) = 1.0
+        _PlaneSize ("Plane size", Float) = 1.0
         _Color ("Color", Color) = (1,1,1,1)
-        _MainTex ("Textura", 2D) = "white" {}
+        _MainTex ("Texture", 2D) = "white" {}
         _FlapSpeed ("Flap Speed", Range(0, 10)) = 7
         _FlapIntensityEdge ("Flap Intensity Edge", Range(0, 1)) = 0.2
         _FlapIntensityMiddle ("Flap Intensity Middle", Range(0, 1)) = 0.1
