@@ -49,7 +49,7 @@ Shader "Custom/SeaShader"
                 vertexOutput o;
                 o.vertex = mul(UNITY_MATRIX_M, v.vertex);
                 o.uv = v.uv;
-                return v;
+                return o;
             }
 
             // hull shader
