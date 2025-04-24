@@ -29,7 +29,7 @@ Shader "Custom/SeaShader"
             };
 
             struct vertexOutput {
-                float4 pos : SV_POSITION;
+                float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
             };
 
@@ -44,9 +44,11 @@ Shader "Custom/SeaShader"
             float _WaveAmplitude;
             float _WaveFrequency;
 
-
-            vertexInput vert(vertexInput v)
+            vertexOutput vert(vertexInput v)
             {
+                vertexOutput o;
+                o.vertex = mul(UNITY_MATRIX_M, v.vertex);
+                o.uv = v.uv;
                 return v;
             }
 
@@ -56,12 +58,12 @@ Shader "Custom/SeaShader"
             [UNITY_outputtopology("triangle_cw")]
             [UNITY_partitioning("integer")]
             [UNITY_patchconstantfunc("patchConstantFunction")]
-            vertexInput hull(InputPatch<vertexInput, 3> patch, uint id : SV_OutputControlPointID)
+            vertexOutput hull(InputPatch<vertexOutput, 3> patch, uint id : SV_OutputControlPointID)
             {
                 return patch[id];
             }
 
-            TessellationFactors patchConstantFunction(InputPatch<vertexInput, 3> patch)
+            TessellationFactors patchConstantFunction(InputPatch<vertexOutput, 3> patch)
             {
                 TessellationFactors f;
                 f.edge[0] = _TessellationUniform;
@@ -74,9 +76,9 @@ Shader "Custom/SeaShader"
 
             // domain shader
             [UNITY_domain("tri")]
-            vertexOutput domain(TessellationFactors factors, OutputPatch<vertexInput, 3> patch, float3 bary : SV_DomainLocation)
+            vertexOutput domain(TessellationFactors factors, OutputPatch<vertexOutput, 3> patch, float3 bary : SV_DomainLocation)
             {
-                vertexInput v;
+                vertexOutput v;
 
                 #define MY_DOMAIN_PROGRAM_INTERPOLATE(fieldName) v.fieldName = patch[0].fieldName * bary.x + patch[1].fieldName * bary.y + patch[2].fieldName * bary.z;
 
@@ -86,11 +88,9 @@ Shader "Custom/SeaShader"
                 float wave = sin(v.vertex.x * _WaveFrequency + _Time.y) + cos(v.vertex.z * _WaveFrequency + _Time.y);
                 v.vertex.y += wave * _WaveAmplitude;
 
-                vertexOutput o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                v.vertex = mul(UNITY_MATRIX_VP, v.vertex);
 
-                return o;
+                return v;
             }
 
             float4 frag(vertexOutput i) : SV_Target
