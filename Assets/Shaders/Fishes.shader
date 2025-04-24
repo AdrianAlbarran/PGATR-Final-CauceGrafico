@@ -1,26 +1,26 @@
-Shader "Custom/SeagullGeometry"
+Shader "PGATR/Fishes"
 {
     Properties
     {
-        _PlaneSize ("Tamaño del Plano", Float) = 1.0
-        _Color ("Color", Color) = (1,1,1,1)
+        _PlaneSize ("Tamanno del Plano", Float) = 1.0
+		_Color("Color", Color) = (1, 1, 1, 1)
         _MainTex ("Textura", 2D) = "white" {}
         _FlapSpeed ("Flap Speed", Range(0, 1)) = 0.3
     }
 
-    CGINCLUDE
+	CGINCLUDE
 	#include "UnityCG.cginc"
 	#include "Autolight.cginc"
-    
-    ////////////////////////////////////////////////////////////////////
+	
+	////////////////////////////////////////////////////////////////////
     ///// GLOBALS
     ////////////////////////////////////////////////////////////////////
-    float _PlaneSize;
+	float _PlaneSize;
     sampler2D _MainTex;
     float4 _Color;
     float _FlapSpeed;
-   
-    ////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////
     ///// STRUCTS
     ////////////////////////////////////////////////////////////////////
 	struct	vertexInput
@@ -45,16 +45,15 @@ Shader "Custom/SeagullGeometry"
 		float2 uv : TEXCOORD0;
 	};
 
-    ////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
     ///// AUX FUNCS
     ////////////////////////////////////////////////////////////////////
-
 	float rand(float3 co)
 	{
 		return frac(sin(dot(co.xyz, float3(12.9898, 78.233, 53.539))) * 43758.5453);
 	}
 
-    float3x3 AngleAxis3x3(float angle, float3 axis)
+	float3x3 AngleAxis3x3(float angle, float3 axis)
 	{
 		float c, s;
 		sincos(angle, s, c);
@@ -71,20 +70,20 @@ Shader "Custom/SeagullGeometry"
 			);
 	}
 
-    ////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////
     ///// MAIN FUNCS
     ////////////////////////////////////////////////////////////////////
 	vertexOutput vert(vertexInput v)
 	{
 		vertexOutput o;
 		o.vertex = v.vertex;
-		o.normal = v.normal; 
+		o.normal = v.normal;
 		o.tangent = v.tangent;
 		o.uv = v.uv;
 		return o;
 	}
 
-    geometryOutput VertexOutput(float3 pos, float2 uv)
+	geometryOutput VertexOutput(float3 pos, float2 uv)
 	{
 		geometryOutput aux;
 		aux.pos = UnityObjectToClipPos(pos);
@@ -92,66 +91,54 @@ Shader "Custom/SeagullGeometry"
 		return aux;
 	}
 
-    [maxvertexcount(14)]
-    void geom(triangle vertexOutput IN[3], inout TriangleStream<geometryOutput> triStream)
-    {
-        float halfSize = _PlaneSize * 0.5;
-
-        // Flap Animation
+	[maxvertexcount(8)]
+	void geo(triangle vertexOutput IN[3], inout TriangleStream<geometryOutput> triStream)
+	{
+		float halfSize = _PlaneSize * 0.5;
+		
+		// Flap Animation
         //float randomSeed = length(mul(unity_ObjectToWorld, IN[0].pos).xyz);
         //float flapAngle = sin(_Time.y * _FlapSpeed + randomSeed * _RandomOffset) * _FlapIntensity * 0.5;
 
-        geometryOutput o;
-        float3 pos = IN[0].vertex.xyz; 
+		geometryOutput o;
+		float3 pos = IN[0].vertex.xyz;
 
-        // Generate all 4 vertex
-        triStream.Append(VertexOutput(pos + float4(-halfSize, 0, 0, 1), float2(0, 0)));
+		triStream.Append(VertexOutput(pos + float4(-halfSize, 0, 0, 1), float2(0, 0)));
 		triStream.Append(VertexOutput(pos + float4(-halfSize, _PlaneSize, 0, 1), float2(0, 1)));
-        triStream.Append(VertexOutput(pos + float4(-halfSize * 0.5, 0, 0, 1), float2(0.25, 0)));
-		triStream.Append(VertexOutput(pos + float4(-halfSize * 0.5, _PlaneSize, 0, 1), float2(0.25, 1)));
-
-        triStream.Append(VertexOutput(pos + float4(-halfSize * 0.15, 0, 0, 1), float2(0.43, 0)));
-		triStream.Append(VertexOutput(pos + float4(-halfSize * 0.15, _PlaneSize, 0, 1), float2(0.43, 1)));
-        triStream.Append(VertexOutput(pos + float4(0, 0, 0, 1), float2(0.5, 0)));
+		triStream.Append(VertexOutput(pos + float4(0, 0, 0, 1), float2(0.5, 0)));
 		triStream.Append(VertexOutput(pos + float4(0, _PlaneSize, 0, 1), float2(0.5, 1)));
-        triStream.Append(VertexOutput(pos + float4(halfSize * 0.15, 0, 0, 1), float2(0.57, 0)));
-		triStream.Append(VertexOutput(pos + float4(halfSize * 0.15, _PlaneSize, 0, 1), float2(0.57, 1)));
-
-        triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, 0, 0, 1), float2(0.75, 0)));
+		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, 0, 0, 1), float2(0.75, 0)));
 		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, _PlaneSize, 0, 1), float2(0.75, 1)));
-        triStream.Append(VertexOutput(pos + float4(halfSize, 0, 0, 1), float2(1,0)));
+		triStream.Append(VertexOutput(pos + float4(halfSize, 0, 0, 1), float2(1,0)));
 		triStream.Append(VertexOutput(pos + float4(halfSize, _PlaneSize, 0, 1), float2(1, 1)));
 
-
-    }
-
-    ENDCG
+	}
+		
+	ENDCG
 
     SubShader
     {
-        Cull Off
+		Cull Off
+		Tags {"RenderType" = "Opaque" "LightMode" = "ForwardBase"}
 
-        Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" }
-
-        Pass 
-        { 
+        Pass
+        {
 
             CGPROGRAM
             #pragma vertex   vert
-            #pragma geometry geom
             #pragma fragment frag
+            #pragma geometry geo
 			#pragma target 4.6
-            
-            
-            float4 frag(geometryOutput i) : SV_Target {
-                float4 color = tex2D(_MainTex, i.uv);
+
+			float4 frag(geometryOutput i) : SV_Target {
+				float4 color = tex2D(_MainTex, i.uv);
         
-                if(color.a < 0.01)
-                {
-                    discard;
-                }
-                return tex2D(_MainTex, i.uv);
-            }
+				if(color.a < 0.01)
+				{
+					discard;
+				}
+				return tex2D(_MainTex, i.uv);
+			}
 
             ENDCG
         }
