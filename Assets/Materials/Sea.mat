@@ -29,8 +29,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _TessellationUniform: 3
-    - _WaveAmplitude: 0.07
+    - _TessellationUniform: 20
+    - _WaveAmplitude: 0.15
     - _WaveFrequency: 1.2
     - _WaveSpeed: 2
     m_Colors:

@@ -6,6 +6,7 @@ Shader "Custom/SeaShader"
         _Color ("Color", Color) = (1,1,1,1)
         _WaveAmplitude("Wave Amplitude", Float) = 0.2
         _WaveFrequency("Wave Frequency", Float) = 2.0
+        _FishHeight ("Fish Height", Range(0, 2)) = 1
     }
 
     SubShader

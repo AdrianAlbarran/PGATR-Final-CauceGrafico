@@ -5,7 +5,10 @@ Shader "Custom/SeagullGeometry"
         _PlaneSize ("Tamaño del Plano", Float) = 1.0
         _Color ("Color", Color) = (1,1,1,1)
         _MainTex ("Textura", 2D) = "white" {}
-        _FlapSpeed ("Flap Speed", Range(0, 1)) = 0.3
+        _FlapSpeed ("Flap Speed", Range(0, 10)) = 7
+        _FlapIntensityEdge ("Flap Intensity Edge", Range(0, 1)) = 0.2
+        _FlapIntensityMiddle ("Flap Intensity Middle", Range(0, 1)) = 0.1
+        _SeagullHeight ("Seagull Height", Range(0, 4)) = 2
     }
 
     CGINCLUDE
@@ -19,6 +22,9 @@ Shader "Custom/SeagullGeometry"
     sampler2D _MainTex;
     float4 _Color;
     float _FlapSpeed;
+    float _FlapIntensityEdge;
+    float _FlapIntensityMiddle;
+    float _SeagullHeight;
    
     ////////////////////////////////////////////////////////////////////
     ///// STRUCTS
@@ -95,32 +101,39 @@ Shader "Custom/SeagullGeometry"
     [maxvertexcount(14)]
     void geom(triangle vertexOutput IN[3], inout TriangleStream<geometryOutput> triStream)
     {
-        float halfSize = _PlaneSize * 0.5;
-
-        // Flap Animation
-        //float randomSeed = length(mul(unity_ObjectToWorld, IN[0].pos).xyz);
-        //float flapAngle = sin(_Time.y * _FlapSpeed + randomSeed * _RandomOffset) * _FlapIntensity * 0.5;
-
         geometryOutput o;
         float3 pos = IN[0].vertex.xyz; 
+        
+        float halfSize = _PlaneSize * 0.5;
+        float randomOffset = rand(pos) ; 
+        float time = _Time.y + randomOffset * 6.28;
 
-        // Generate all 4 vertex
-        triStream.Append(VertexOutput(pos + float4(-halfSize, 0, 0, 1), float2(0, 0)));
-		triStream.Append(VertexOutput(pos + float4(-halfSize, _PlaneSize, 0, 1), float2(0, 1)));
-        triStream.Append(VertexOutput(pos + float4(-halfSize * 0.5, 0, 0, 1), float2(0.25, 0)));
-		triStream.Append(VertexOutput(pos + float4(-halfSize * 0.5, _PlaneSize, 0, 1), float2(0.25, 1)));
+        float flapEdge = sin(time * _FlapSpeed) * _FlapIntensityEdge - 0.03 ;
+        float flapMiddle = sin(time * _FlapSpeed) * _FlapIntensityMiddle - 0.03 ;
 
-        triStream.Append(VertexOutput(pos + float4(-halfSize * 0.15, 0, 0, 1), float2(0.43, 0)));
-		triStream.Append(VertexOutput(pos + float4(-halfSize * 0.15, _PlaneSize, 0, 1), float2(0.43, 1)));
-        triStream.Append(VertexOutput(pos + float4(0, 0, 0, 1), float2(0.5, 0)));
-		triStream.Append(VertexOutput(pos + float4(0, _PlaneSize, 0, 1), float2(0.5, 1)));
-        triStream.Append(VertexOutput(pos + float4(halfSize * 0.15, 0, 0, 1), float2(0.57, 0)));
-		triStream.Append(VertexOutput(pos + float4(halfSize * 0.15, _PlaneSize, 0, 1), float2(0.57, 1)));
+        float height = (randomOffset * 2.0 - 1.0) * _SeagullHeight;
 
-        triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, 0, 0, 1), float2(0.75, 0)));
-		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, _PlaneSize, 0, 1), float2(0.75, 1)));
-        triStream.Append(VertexOutput(pos + float4(halfSize, 0, 0, 1), float2(1,0)));
-		triStream.Append(VertexOutput(pos + float4(halfSize, _PlaneSize, 0, 1), float2(1, 1)));
+        float y1 = -0.05 + flapEdge + height;
+        float y2 =  flapMiddle + height;
+        float y3 = -0.08 + height;
+        float y4 = -0.1 + height;
+        
+        triStream.Append(VertexOutput(pos + float4(-halfSize, y1, 0, 1), float2(0, 0)));
+		triStream.Append(VertexOutput(pos + float4(-halfSize, y1, _PlaneSize, 1), float2(0, 1)));
+        triStream.Append(VertexOutput(pos + float4(-halfSize * 0.5, y2, 0, 1), float2(0.25, 0)));
+		triStream.Append(VertexOutput(pos + float4(-halfSize * 0.5, y2, _PlaneSize, 1), float2(0.25, 1)));
+
+        triStream.Append(VertexOutput(pos + float4(-halfSize * 0.15, y3, 0, 1), float2(0.43, 0)));
+		triStream.Append(VertexOutput(pos + float4(-halfSize * 0.15, y3, _PlaneSize, 1), float2(0.43, 1)));
+        triStream.Append(VertexOutput(pos + float4(0, y4, 0, 1), float2(0.5, 0)));
+		triStream.Append(VertexOutput(pos + float4(0, y4, _PlaneSize, 1), float2(0.5, 1)));
+        triStream.Append(VertexOutput(pos + float4(halfSize * 0.15, y3, 0, 1), float2(0.57, 0)));
+		triStream.Append(VertexOutput(pos + float4(halfSize * 0.15, y3, _PlaneSize, 1), float2(0.57, 1)));
+
+        triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, y2, 0, 1), float2(0.75, 0)));
+		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, y2, _PlaneSize, 1), float2(0.75, 1)));
+        triStream.Append(VertexOutput(pos + float4(halfSize, y1, 0, 1), float2(1,0)));
+		triStream.Append(VertexOutput(pos + float4(halfSize, y1, _PlaneSize, 1), float2(1, 1)));
 
 
     }

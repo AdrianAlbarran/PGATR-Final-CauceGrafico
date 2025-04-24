@@ -68,7 +68,10 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _FapAmplitude: 45
-    - _FlapSpeed: 1
+    - _FlapIntensity: 0.1
+    - _FlapIntensityEdge: 0.2
+    - _FlapIntensityMiddle: 0.1
+    - _FlapSpeed: 7
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -77,6 +80,7 @@ Material:
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _PlaneSize: 0.9
+    - _SeagullHeight: 2
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

@@ -5,7 +5,10 @@ Shader "PGATR/Fishes"
         _PlaneSize ("Tamanno del Plano", Float) = 1.0
 		_Color("Color", Color) = (1, 1, 1, 1)
         _MainTex ("Textura", 2D) = "white" {}
-        _FlapSpeed ("Flap Speed", Range(0, 1)) = 0.3
+        _SwingSpeed ("Swing Speed", Range(0, 10)) = 4
+        _SwingIntensityEdge ("Swing Intensity Edge", Range(0, 1)) = 0.3
+        _SwingIntensityMiddle ("Swing Intensity Middle", Range(0, 1)) = 0.2
+        _FishHeight ("Fish Height", Range(0, 2)) = 1
     }
 
 	CGINCLUDE
@@ -18,7 +21,10 @@ Shader "PGATR/Fishes"
 	float _PlaneSize;
     sampler2D _MainTex;
     float4 _Color;
-    float _FlapSpeed;
+    float _SwingSpeed;
+    float _SwingIntensityEdge;
+    float _SwingIntensityMiddle;
+    float _FishHeight;
 
 	////////////////////////////////////////////////////////////////////
     ///// STRUCTS
@@ -95,22 +101,30 @@ Shader "PGATR/Fishes"
 	void geo(triangle vertexOutput IN[3], inout TriangleStream<geometryOutput> triStream)
 	{
 		float halfSize = _PlaneSize * 0.5;
-		
-		// Flap Animation
-        //float randomSeed = length(mul(unity_ObjectToWorld, IN[0].pos).xyz);
-        //float flapAngle = sin(_Time.y * _FlapSpeed + randomSeed * _RandomOffset) * _FlapIntensity * 0.5;
 
 		geometryOutput o;
 		float3 pos = IN[0].vertex.xyz;
+		
+        float randomOffset = rand(pos); 
+        float time = _Time.y + randomOffset * 6.28;
 
-		triStream.Append(VertexOutput(pos + float4(-halfSize, 0, 0, 1), float2(0, 0)));
-		triStream.Append(VertexOutput(pos + float4(-halfSize, _PlaneSize, 0, 1), float2(0, 1)));
-		triStream.Append(VertexOutput(pos + float4(0, 0, 0, 1), float2(0.5, 0)));
-		triStream.Append(VertexOutput(pos + float4(0, _PlaneSize, 0, 1), float2(0.5, 1)));
-		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, 0, 0, 1), float2(0.75, 0)));
-		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, _PlaneSize, 0, 1), float2(0.75, 1)));
-		triStream.Append(VertexOutput(pos + float4(halfSize, 0, 0, 1), float2(1,0)));
-		triStream.Append(VertexOutput(pos + float4(halfSize, _PlaneSize, 0, 1), float2(1, 1)));
+		float height = (randomOffset * 2.0 - 1.0) * _FishHeight;
+
+        float y2 =  _PlaneSize + height;
+
+        float swingEdge = sin(time * _SwingSpeed) * _SwingIntensityEdge - 0.03 ;
+        float swingMiddle = sin(time * _SwingSpeed) * _SwingIntensityMiddle - 0.03 ;
+
+		triStream.Append(VertexOutput(pos + float4(-halfSize, height, 0, 1), float2(0, 0)));
+		triStream.Append(VertexOutput(pos + float4(-halfSize, y2, 0, 1), float2(0, 1)));
+		
+		triStream.Append(VertexOutput(pos + float4(0, height, swingMiddle, 1), float2(0.5, 0)));
+		triStream.Append(VertexOutput(pos + float4(0, y2, swingMiddle, 1), float2(0.5, 1)));
+
+		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, height, swingMiddle, 1), float2(0.75, 0)));
+		triStream.Append(VertexOutput(pos + float4(halfSize * 0.5, y2, swingMiddle, 1), float2(0.75, 1)));
+		triStream.Append(VertexOutput(pos + float4(halfSize, height, swingEdge, 1), float2(1,0)));
+		triStream.Append(VertexOutput(pos + float4(halfSize, y2, swingEdge, 1), float2(1, 1)));
 
 	}
 		
