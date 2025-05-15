@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Sea
-  m_Shader: {fileID: 4800000, guid: 5f9f1144dc8027a46a7c62e3bbc152be, type: 3}
+  m_Name: WireFrameMaterial
+  m_Shader: {fileID: 4800000, guid: 68d5d7eb301b16640962a5e4b6d2c7c0, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -27,10 +27,6 @@ Material:
         m_Texture: {fileID: 2800000, guid: 9c65a2c311fb05b4d8805f3ad2e4a3b7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
     - _DisplacementIntensity: 12
@@ -38,7 +34,8 @@ Material:
     - _TessellationUniform: 20
     - _WaveAmplitude: 0.15
     - _WaveFrequency: 1.2
-    - _WaveSpeed: 2
+    - _WireWidth: 0.5
     m_Colors:
-    - _Color: {r: 0.16420433, g: 0.38873747, b: 0.8490566, a: 0.3137255}
+    - _Color: {r: 0.1642043, g: 0.38873744, b: 0.8490566, a: 0.3137255}
+    - _WireColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
