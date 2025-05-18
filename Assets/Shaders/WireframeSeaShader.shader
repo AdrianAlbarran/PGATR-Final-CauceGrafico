@@ -16,10 +16,13 @@ Shader "Custom/WireframeSeaShader"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
 
         Pass
         {
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+
             CGPROGRAM
             #pragma target 4.6
             #pragma vertex vert
@@ -153,6 +156,8 @@ Shader "Custom/WireframeSeaShader"
                 float edge = min(min(bary.x, bary.y), bary.z);
                 
                 float4 seaColor = _Color;
+                seaColor.a = 0.5;
+                
                 float4 wireColor = _WireColor * (1.0 - edge);
                 
                 return lerp(seaColor, wireColor, (1.0 - edge));

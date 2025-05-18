@@ -13,10 +13,14 @@ Shader "Custom/SeaShader"
 
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" "Queue"="Transparent" }
 
         Pass
         {
+
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+
             CGPROGRAM
             #pragma target 4.6
             #pragma vertex vert
@@ -117,7 +121,9 @@ Shader "Custom/SeaShader"
 
             float4 frag(geometryOutput i) : SV_Target
             {
-                return _Color;
+                float4 color = _Color;
+                color.a = 0.5;
+                return color;
             }
             ENDCG
         }
