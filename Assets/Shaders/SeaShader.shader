@@ -6,7 +6,6 @@ Shader "Custom/SeaShader"
         _Color ("Color", Color) = (0,0,1,1)
         _WaveAmplitude("Wave Amplitude", Float) = 0.2
         _WaveFrequency("Wave Frequency", Float) = 2.0
-        _FishHeight ("Fish Height", Range(0, 2)) = 1
 
         _DisplacementTex ("Displacement Texture", 2D) = "white" {}
         _DisplacementIntensity ("Displacement Intensety", Range(0, 50)) = 12
